@@ -145,6 +145,35 @@
     .link-value {
       color: #ffffff;
     }
+
+    /* Стильная кнопка музыки в углу экрана */
+    .music-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+    }
+
+    .music-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -188,6 +217,51 @@
     </div>
 
   </div>
+
+  <!-- Аудиоплеер (поменяй music.mp3 на свое название, если нужно) -->
+  <audio id="bg-music" src="music.mp3" loop></audio>
+
+  <!-- Кнопка управления -->
+  <button id="music-toggle" class="music-btn" aria-label="Управление музыкой">
+    <span id="music-icon">▶</span>
+  </button>
+
+  <!-- Скрипт для обхода блокировок автозвука в браузерах -->
+  <script>
+    const music = document.getElementById('bg-music');
+    const toggleBtn = document.getElementById('music-toggle');
+    const icon = document.getElementById('music-icon');
+
+    // Громкость (0.2 — это 20%, чтобы не орало на всю комнату)
+    music.volume = 0.2; 
+
+    function togglePlay() {
+      if (music.paused) {
+        music.play().then(() => {
+          icon.textContent = '⏸';
+        }).catch(err => console.log("Ошибка звука:", err));
+      } else {
+        music.pause();
+        icon.textContent = '▶';
+      }
+    }
+
+    // Ручное переключение по кнопке
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); 
+      togglePlay();
+    });
+
+    // Автозапуск при самом первом клике пользователя в любое место экрана
+    document.body.addEventListener('click', () => {
+      if (music.paused && !music.dataset.triggered) {
+        music.play().then(() => {
+          icon.textContent = '⏸';
+          music.dataset.triggered = 'true';
+        }).catch(() => console.log("Браузер ждет клика"));
+      }
+    }, { once: true });
+  </script>
 
 </body>
 </html>
