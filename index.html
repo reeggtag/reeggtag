@@ -371,7 +371,7 @@
         
         <div class="playlist-item">
           <div class="track-title">Toby Fox - sans.</div>
-          <div class="tg-audio-player" data-track="music1.mp3">
+          <div class="tg-audio-player" data-audio-id="audio1">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
@@ -379,11 +379,12 @@
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
             </div>
           </div>
+          <audio id="audio1" src="music1.mp3" loop preload="auto"></audio>
         </div>
 
         <div class="playlist-item">
           <div class="track-title">sorr0w - i have no friends</div>
-          <div class="tg-audio-player" data-track="music2.mp3">
+          <div class="tg-audio-player" data-audio-id="audio2">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
@@ -391,11 +392,12 @@
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
             </div>
           </div>
+          <audio id="audio2" src="music2.mp3" loop preload="auto"></audio>
         </div>
 
         <div class="playlist-item">
           <div class="track-title">mzlff - жизненная</div>
-          <div class="tg-audio-player" data-track="music3.mp3">
+          <div class="tg-audio-player" data-audio-id="audio3">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
@@ -403,11 +405,12 @@
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
             </div>
           </div>
+          <audio id="audio3" src="music3.mp3" loop preload="auto"></audio>
         </div>
 
         <div class="playlist-item">
           <div class="track-title">coldwntr - degenerate</div>
-          <div class="tg-audio-player" data-track="music4.mp3">
+          <div class="tg-audio-player" data-audio-id="audio4">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
@@ -415,11 +418,12 @@
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
             </div>
           </div>
+          <audio id="audio4" src="music4.mp3" loop preload="auto"></audio>
         </div>
 
         <div class="playlist-item">
           <div class="track-title">Твой трек 5 - Название</div>
-          <div class="tg-audio-player" data-track="music5.mp3">
+          <div class="tg-audio-player" data-audio-id="audio5">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
@@ -427,6 +431,7 @@
               <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
             </div>
           </div>
+          <audio id="audio5" src="music5.mp3" loop preload="auto"></audio>
         </div>
 
       </div>
@@ -436,26 +441,32 @@
 
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
-  <audio id="global-music" loop></audio>
-
   <script>
-    const audio = document.getElementById('global-music');
     const players = document.querySelectorAll('.tg-audio-player');
+    const audios = document.querySelectorAll('.playlist-item audio');
     const volumeSlider = document.getElementById('volume-slider');
     
-    audio.volume = volumeSlider.value; 
+    let currentAudio = null;
+    let currentButtonIcon = null;
+    let currentPlayerBlock = null;
 
-    volumeSlider.addEventListener('input', (e) => {
-      audio.volume = e.target.value;
-    });
+    // Установка громкости для всех аудио
+    function syncVolume() {
+      audios.forEach(audio => {
+        audio.volume = volumeSlider.value;
+      });
+    }
+    syncVolume();
 
-    let currentPlayingPlayer = null;
+    volumeSlider.addEventListener('input', syncVolume);
 
     function handlePlayerClick(player) {
-      const trackSrc = player.getAttribute('data-track');
+      const audioId = player.getAttribute('data-audio-id');
+      const audio = document.getElementById(audioId);
       const btnIcon = player.querySelector('.tg-play-btn span');
 
-      if (currentPlayingPlayer === player) {
+      // Если кликнули на тот же трек, который уже выбран
+      if (currentAudio === audio) {
         if (!audio.paused) {
           audio.pause();
           btnIcon.textContent = '▶';
@@ -464,40 +475,54 @@
           audio.play().then(() => {
             btnIcon.textContent = '⏸';
             player.classList.add('is-playing');
-          });
+          }).catch(err => console.log(err));
         }
         return;
       }
 
-      if (currentPlayingPlayer) {
-        currentPlayingPlayer.querySelector('.tg-play-btn span').textContent = '▶';
-        currentPlayingPlayer.classList.remove('is-playing');
+      // Если играет другой трек — останавливаем его начисто
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0; // Сброс в начало
+        currentButtonIcon.textContent = '▶';
+        currentPlayerBlock.classList.remove('is-playing');
       }
 
-      audio.src = trackSrc;
+      // Запуск нового трека
       audio.play().then(() => {
         btnIcon.textContent = '⏸';
         player.classList.add('is-playing');
-        currentPlayingPlayer = player;
-      }).catch(err => console.log("Ошибка воспроизведения:", err));
+        currentAudio = audio;
+        currentButtonIcon = btnIcon;
+        currentPlayerBlock = player;
+      }).catch(err => console.log("Мобильный браузер заблокировал старт:", err));
     }
 
     players.forEach(player => {
       const btn = player.querySelector('.tg-play-btn');
-      btn.addEventListener('click', (e) => {
+      // Используем touchstart + click для мгновенного отклика на мобильных
+      const startPlay = (e) => {
+        e.preventDefault();
         e.stopPropagation();
         handlePlayerClick(player);
-      });
+      };
+      btn.addEventListener('click', startPlay);
+      btn.addEventListener('touchstart', startPlay, { passive: false });
     });
 
+    // Безопасный автоплей для мобилок через любое первое касание экрана
     function autoPlayFirstTrack() {
-      if (!currentPlayingPlayer && audio.paused) {
+      if (!currentAudio) {
         const firstPlayer = players[0];
-        audio.src = firstPlayer.getAttribute('data-track');
-        audio.play().then(() => {
-          firstPlayer.querySelector('.tg-play-btn span').textContent = '⏸';
+        const firstAudio = document.getElementById('audio1');
+        const firstIcon = firstPlayer.querySelector('.tg-play-btn span');
+
+        firstAudio.play().then(() => {
+          firstIcon.textContent = '⏸';
           firstPlayer.classList.add('is-playing');
-          currentPlayingPlayer = firstPlayer;
+          currentAudio = firstAudio;
+          currentButtonIcon = firstIcon;
+          currentPlayerBlock = firstPlayer;
           removeAutoPlayListeners();
         }).catch(() => {});
       }
@@ -505,33 +530,29 @@
 
     function addAutoPlayListeners() {
       window.addEventListener('click', autoPlayFirstTrack);
-      window.addEventListener('scroll', autoPlayFirstTrack);
-      window.addEventListener('keydown', autoPlayFirstTrack);
       window.addEventListener('touchstart', autoPlayFirstTrack);
     }
 
     function removeAutoPlayListeners() {
       window.removeEventListener('click', autoPlayFirstTrack);
-      window.removeEventListener('scroll', autoPlayFirstTrack);
-      window.removeEventListener('keydown', autoPlayFirstTrack);
       window.removeEventListener('touchstart', autoPlayFirstTrack);
     }
 
     addAutoPlayListeners();
 
+    // Копирование Дискорда
     const discordBtn = document.getElementById('discord-btn');
     const toast = document.getElementById('toast');
     let toastTimeout;
 
     discordBtn.addEventListener('click', () => {
-      const textToCopy = "reeggtag";
-      navigator.clipboard.writeText(textToCopy).then(() => {
+      navigator.clipboard.writeText("reeggtag").then(() => {
         toast.classList.add('show');
         clearTimeout(toastTimeout);
         toastTimeout = setTimeout(() => {
           toast.classList.remove('show');
         }, 3000);
-      }).catch(err => console.error('Не удалось скопировать: ', err));
+      }).catch(err => console.error(err));
     });
   </script>
 </body>
