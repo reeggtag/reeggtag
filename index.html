@@ -15,13 +15,17 @@
       padding: 0;
     }
 
-    /* 2. Твой собственный фон (замени bg.jpg на свой файл) */
+    /* 2. Твой собственный фон с защитой от белых полос на мобилках */
     body {
       margin: 0;
       width: 100vw;
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg.jpg') no-repeat center center fixed;
+      background-color: #121316; /* Убирает белую область снизу экрана */
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg.jpg');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
