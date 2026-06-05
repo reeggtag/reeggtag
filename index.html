@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>reeggtag — bio</title>
   <style>
-    /* Подключаем пиксельный шрифт для никнейма */
-    @import url('https://googleapis.com');
+    /* Исправленное подключение пиксельного шрифта для никнейма */
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
     /* 1. Сброс базовых отступов */
     * {
@@ -21,7 +21,7 @@
       width: 100vw;
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #121316; /* Убирает белую область снизу экрана */
+      background-color: #121316; 
       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg.jpg');
       background-repeat: no-repeat;
       background-position: center center;
@@ -68,7 +68,7 @@
 
     .nickname {
       font-family: 'Press Start 2P', cursive;
-      font-size: 16px;
+      font-size: 14px;
       margin-bottom: 16px;
       color: #ffffff;
       text-transform: uppercase;
@@ -110,6 +110,7 @@
       text-decoration: none;
       font-size: 15px;
       font-weight: 500;
+      cursor: pointer; 
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -117,13 +118,6 @@
       background: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.12);
       transform: translateY(-1px);
-    }
-
-    .link-item.noclick {
-      cursor: default;
-    }
-    .link-item.noclick:hover {
-      transform: none;
     }
 
     .icon-tag {
@@ -139,7 +133,7 @@
       color: #dddddd;
     }
 
-    /* 6. ТГ-плеер в самом низу карточки */
+    /* 6. ТГ-плеер */
     .tg-audio-player {
       display: flex;
       align-items: center;
@@ -150,7 +144,6 @@
       gap: 14px;
     }
 
-    /* Кнопка Play в один тон с остальным дизайном */
     .tg-play-btn {
       width: 34px;
       height: 34px;
@@ -172,7 +165,6 @@
       border-color: rgba(255, 255, 255, 0.15);
     }
 
-    /* Звуковая дорожка растянута до конца */
     .tg-wave {
       display: flex;
       align-items: center;
@@ -181,7 +173,6 @@
       height: 24px;
     }
 
-    /* Полоски в цвет текста визитки */
     .tg-bar {
       width: 3px;
       background: #dddddd; 
@@ -189,67 +180,112 @@
       opacity: 0.8;
     }
 
-    /* Разная высота полосок для правильного эффекта аудио */
     .tg-bar:nth-child(odd) { height: 10px; }
     .tg-bar:nth-child(even) { height: 18px; }
     .tg-bar:nth-child(3n) { height: 14px; }
     .tg-bar:nth-child(5n) { height: 22px; }
 
-    /* Эффект блеклости полосок, только когда плеер на паузе вручную */
     .tg-audio-player.paused-manually .tg-bar {
       background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* 7. Секция любимых игр */
+    .games-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .games-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      padding-left: 4px;
+    }
+
+    .games-image {
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      display: block;
+    }
+
+    /* 8. Всплывающее ТГ-уведомление */
+    .toast-notification {
+      position: fixed;
+      bottom: -60px; 
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(25, 27, 31, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 24px;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast-notification.show {
+      bottom: 30px; 
     }
   </style>
 </head>
 <body>
 
-  <!-- Главный контейнер -->
   <div class="main-container">
     
-    <!-- Секция профиля -->
     <div class="profile-header">
       <img class="avatar" src="avatar.jpg" alt="reeggtag Avatar">
       <div class="nickname">reeggtag</div>
       <div class="description">
-        Пр, я рыг. Мне 14 лет. Я люблю игры жанра топ-даун, инди-игры, рпг и песочницы. В тикитоке у меня целых 1к падпищикаф и я крутой. Ещё мне не с кем гулять, и я сижу дома и играю в кампутеррр
+        Пр, я рыг. Мне 14 лет. Я люблю игры жанра топ-даун, инди-игры, рпг и песочницы. В тиктоке у меня целых 1к падпищикаф и я крутой. Ещё мне не с кем гулять, и я сижу дома и играю в кампуветррр
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Сетка твоих социальных сетей -->
     <div class="links-grid">
       
-      <!-- Telegram -->
-      <a href="https://t.me" target="_blank" class="link-item">
+      <a href="https://t.me/reeggtag15" target="_blank" rel="noopener noreferrer" class="link-item">
         <span class="icon-tag">TG</span>
         <span class="link-value">@reeggtag15</span>
       </a>
+
+      <a href="https://t.me/reeggtag" target="_blank" rel="noopener noreferrer" class="link-item">
+        <span class="icon-tag">TGK</span>
+        <span class="link-value">@reeggtag</span>
+      </a>
       
-      <!-- Discord -->
-      <div class="link-item noclick">
+      <div class="link-item" id="discord-btn">
         <span class="icon-tag">DS</span>
-        <span class="link-value">reeggtag</span>
+        <span class="link-value" id="discord-nick">reeggtag</span>
       </div>
       
-      <!-- TikTok -->
-      <a href="https://tiktok.com" target="_blank" class="link-item">
+      <a href="https://www.tiktok.com/@reeggtag" target="_blank" rel="noopener noreferrer" class="link-item">
         <span class="icon-tag">TT</span>
         <span class="link-value">@reeggtag</span>
       </a>
 
+      <a href="https://steamcommunity.com/id/reeggtag/" target="_blank" rel="noopener noreferrer" class="link-item">
+        <span class="icon-tag">ST</span>
+        <span class="link-value">reeggtag</span>
+      </a>
+
     </div>
 
-    <!-- Тонкий разделитель перед плеером -->
     <div class="divider"></div>
 
-    <!-- ТГ-плеер в самом низу -->
     <div id="tg-player" class="tg-audio-player">
       <button id="music-toggle" class="tg-play-btn" aria-label="Воспроизведение">
         <span id="music-icon">▶</span>
       </button>
       <div class="tg-wave">
-        <!-- Увеличенное количество полосок для заполнения всей длины -->
         <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
         <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
         <div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div><div class="tg-bar"></div>
@@ -259,19 +295,25 @@
       </div>
     </div>
 
+    <div class="divider"></div>
+
+    <div class="games-section">
+      <div class="games-title">Любимые игры:</div>
+      <img class="games-image" src="games.jpg" alt="Любимые игры">
+    </div>
+
   </div>
 
-  <!-- Аудиоплеер (музыка на повторе) -->
+  <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
+
   <audio id="bg-music" src="music.mp3" loop></audio>
 
-  <!-- Скрипт автозапуска и управления кнопкой -->
   <script>
     const music = document.getElementById('bg-music');
     const toggleBtn = document.getElementById('music-toggle');
     const icon = document.getElementById('music-icon');
     const playerBlock = document.getElementById('tg-player');
 
-    // Уровень громкости (20%)
     music.volume = 0.2; 
 
     function togglePlay() {
@@ -317,7 +359,24 @@
     }
 
     addListeners();
-  </script>
 
+    // Копирование Discord
+    const discordBtn = document.getElementById('discord-btn');
+    const toast = document.getElementById('toast');
+    let toastTimeout;
+
+    discordBtn.addEventListener('click', () => {
+      const textToCopy = "reeggtag";
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
+      }).catch(err => {
+        console.error('Не удалось скопировать: ', err);
+      });
+    });
+  </script>
 </body>
 </html>
