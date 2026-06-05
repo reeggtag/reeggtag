@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reeggtag — bio</title>
+  <style>
+    /* Подключаем пиксельный шрифт для никнейма */
+    @import url('https://googleapis.com');
+
+    /* 1. Сброс базовых отступов */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 2. Оригинальный темный переливающийся фон */
+    body {
+      margin: 0;
+      width: 100vw;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(145deg, #0f1115, #161920, #0a0b0d);
+      background-size: 300% 300%;
+      animation: gradientBG 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+      color: #ffffff;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 3. Основная карточка из «жидкого стекла» (Liquid Glass) */
+    .main-container {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(25px) saturate(140%);
+      -webkit-backdrop-filter: blur(25px) saturate(140%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 32px;
+      width: 100%;
+      max-width: 440px;
+      padding: 35px 30px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4),
+                  inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* 4. Блок профиля (Аватар, Ник, Описание) */
+    .profile-header {
+      text-align: center;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      margin: 0 auto 16px auto;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      object-fit: cover;
+      display: block;
+    }
+
+    .nickname {
+      font-family: 'Press Start 2P', cursive; /* Игровой пиксельный стиль */
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .description {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      font-weight: 400;
+      padding: 0 10px;
+    }
+
+    /* Тонкий разделитель */
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+      width: 100%;
+    }
+
+    /* 5. Кнопки социальных сетей */
+    .links-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .link-item {
+      width: 100%;
+      height: 54px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Эффект интерактивности при наведении */
+    .link-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: scale(1.015);
+    }
+
+    /* Кастомная плашка для Discord */
+    .link-item.noclick {
+      cursor: default;
+    }
+    .link-item.noclick:hover {
+      transform: none;
+    }
+
+    /* Текстовые маркеры вместо тяжелых иконок */
+    .icon-tag {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.4);
+      width: 45px;
+      margin-right: 10px;
+    }
+
+    .link-value {
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Главный контейнер -->
+  <div class="main-container">
+    
+    <!-- Секция профиля -->
+    <div class="profile-header">
+      <!-- Имя файла аватарки в src -->
+      <img class="avatar" src="avatar.jpg" alt="reeggtag Avatar">
+      <div class="nickname">reeggtag</div>
+      <div class="description">
+        пр я рыг я люблю игры жанра топ даун, инди игры и песочницы ещо мне не с кем гулять и я сижу дома и играю в кампутер
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Сетка ваших социальных сетей -->
+    <div class="links-grid">
+      
+      <!-- Telegram -->
+      <a href="https://t.me" target="_blank" class="link-item">
+        <span class="icon-tag">TG</span>
+        <span class="link-value">@reeggtag15</span>
+      </a>
+      
+      <!-- Discord -->
+      <div class="link-item noclick">
+        <span class="icon-tag">DS</span>
+        <span class="link-value">reeggtag</span>
+      </div>
+      
+      <!-- TikTok -->
+      <a href="https://tiktok.com" target="_blank" class="link-item">
+        <span class="icon-tag">TT</span>
+        <span class="link-value">@reeggtag</span>
+      </a>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
