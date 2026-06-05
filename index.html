@@ -201,6 +201,46 @@
     .tg-bar:nth-child(3n) { height: 14px; }
     .tg-bar:nth-child(5n) { height: 22px; }
 
+    /* Стили для ползунка громкости */
+    .volume-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      margin-top: 4px;
+    }
+
+    .volume-label {
+      font-size: 13px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 60%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: transform 0.1s ease;
+    }
+
+    .volume-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
     .games-section {
       display: flex;
       flex-direction: column;
@@ -321,6 +361,12 @@
 
     <div class="playlist-section">
       <div class="playlist-title">Мой плейлист:</div>
+      
+      <div class="volume-control">
+        <span class="volume-label">Громкость:</span>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="0.2">
+      </div>
+      
       <div class="playlist-container">
         
         <div class="playlist-item">
@@ -372,7 +418,7 @@
         </div>
 
         <div class="playlist-item">
-          <div class="track-title">??? - обрыган</div>
+          <div class="track-title">Твой трек 5 - Название</div>
           <div class="tg-audio-player" data-track="music5.mp3">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
@@ -395,7 +441,13 @@
   <script>
     const audio = document.getElementById('global-music');
     const players = document.querySelectorAll('.tg-audio-player');
-    audio.volume = 0.2; 
+    const volumeSlider = document.getElementById('volume-slider');
+    
+    audio.volume = volumeSlider.value; 
+
+    volumeSlider.addEventListener('input', (e) => {
+      audio.volume = e.target.value;
+    });
 
     let currentPlayingPlayer = null;
 
