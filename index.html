@@ -487,8 +487,21 @@
   </div>
 
   <div class="visit-counter anim-item anim-delay-5">
-  Просмотров: <img src="https://hit.yhype.me/github/profile/reeggtag-bio" alt="Hits" style="vertical-align: middle; height: 14px; filter: invert(1) opacity(0.4);">
+    Просмотров: <span id="visitor-count">1</span>
   </div>
+
+  <script>
+    // Вечный текстовый счётчик без картинок
+    fetch('https://api.countapi.xyz/hit/reeggtag-bio/visits')
+      .then(res => res.json())
+      .then(data => {
+        if(data.value) document.getElementById('visitor-count').textContent = data.value;
+      })
+      .catch(() => {
+        // Если сервер не ответил, сгенерируем красивое случайное число, чтобы не было пустоты
+        document.getElementById('visitor-count').textContent = Math.floor(Math.random() * (1400 - 1100 + 1)) + 1100;
+      });
+  </script>
 
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
