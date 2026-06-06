@@ -560,54 +560,67 @@
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
   <script>
-    const baseName = "reeggtag-bio-fresh-v4"; // Ключ v4 гарантирует полный сброс
+    // Уникальный ключ для твоих счетчиков
+    const baseKey = "reeggtag_bio_v2026_final"; 
+    const apiBase = "https://api.counterapi.dev/v1";
+
+    const viewsEl = document.getElementById('visitor-count');
+    const likesEl = document.getElementById('like-count');
+    const dislikesEl = document.getElementById('dislike-count');
+    const likeBtn = document.getElementById('like-btn');
+    const dislikeBtn = document.getElementById('dislike-btn');
+
+    const hasVoted = localStorage.getItem(`${baseKey}_voted`);
 
     function initStats() {
-      // 1. Счётчик просмотров (базовое значение теперь 0)
-      fetch(`https://api.scrimba.com/counters/${baseName}-views`)
+      // 1. Просмотры: увеличиваем на сервере при входе
+      fetch(`${apiBase}/${baseKey}/views/up`)
         .then(res => res.json())
-        .then(data => {
-          let count = data.value || 0; 
-          count++; 
-          document.getElementById('visitor-count').textContent = count;
-          fetch(`https://api.scrimba.com/counters/${baseName}-views`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ value: count })
-          }).catch(() => {});
-        }).catch(() => { document.getElementById('visitor-count').textContent = "1"; });
+        .then(data => { viewsEl.textContent = data.count || 1; })
+        .catch(() => { viewsEl.textContent = "1"; });
 
-      // 2. Загрузка общего количества Лайков
-      fetch(`https://api.scrimba.com/counters/${baseName}-likes`)
+      // 2. Достаем общее количество лайков
+      fetch(`${apiBase}/${baseKey}/likes`)
         .then(res => res.json())
-        .then(data => { if(data.value) document.getElementById('like-count').textContent = data.value; })
+        .then(data => { if(data.count) likesEl.textContent = data.count; })
         .catch(() => {});
 
-      // 3. Загрузка общего количества Дизлайков
-      fetch(`https://api.scrimba.com/counters/${baseName}-dislikes`)
+      // 3. Достаем общее количество дизлайков
+      fetch(`${apiBase}/${baseKey}/dislikes`)
         .then(res => res.json())
-        .then(data => { if(data.value) document.getElementById('dislike-count').textContent = data.value; })
+        .then(data => { if(data.count) dislikesEl.textContent = data.count; })
         .catch(() => {});
+
+      // Блокируем кнопки, если человек уже оставлял тут реакцию
+      if (hasVoted) {
+        likeBtn.disabled = true;
+        dislikeBtn.disabled = true;
+        if (hasVoted === 'like') likeBtn.style.background = "rgba(255, 255, 255, 0.12)";
+        if (hasVoted === 'dislike') dislikeBtn.style.background = "rgba(255, 255, 255, 0.12)";
+      }
     }
 
     function sendReaction(type) {
-      const elementId = `${type}-count`;
-      let currentVal = parseInt(document.getElementById(elementId).textContent) || 0;
-      currentVal++;
-      document.getElementById(elementId).textContent = currentVal;
+      if (localStorage.getItem(`${baseKey}_voted`)) return;
 
-      document.getElementById('like-btn').disabled = true;
-      document.getElementById('dislike-btn').disabled = true;
+      const element = type === 'like' ? likesEl : dislikesEl;
+      let currentVal = parseInt(element.textContent) || 0;
+      
+      element.textContent = currentVal + 1;
 
-      fetch(`https://api.scrimba.com/counters/${baseName}-${type}s`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ value: currentVal })
-      }).catch(() => {});
+      likeBtn.disabled = true;
+      dislikeBtn.disabled = true;
+      localStorage.setItem(`${baseKey}_voted`, type);
+
+      // Отправляем +1 на сервер
+      fetch(`${apiBase}/${baseKey}/${type}s/up`)
+        .then(res => res.json())
+        .then(data => { if(data.count) element.textContent = data.count; })
+        .catch(() => {});
     }
 
-    document.getElementById('like-btn').addEventListener('click', () => sendReaction('like'));
-    document.getElementById('dislike-btn').addEventListener('click', () => sendReaction('dislike'));
+    likeBtn.addEventListener('click', () => sendReaction('like'));
+    dislikeBtn.addEventListener('click', () => sendReaction('dislike'));
 
     initStats();
   </script>
