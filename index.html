@@ -96,7 +96,7 @@
     }
 
     .btn-reaction:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
@@ -549,7 +549,7 @@
 
   <div class="bottom-feedback anim-item anim-delay-5">
     <div class="visit-counter">
-      Просмотров: <span id="visitor-count">0</span>
+      Просмотров: <span id="visitor-count">Загрузка...</span>
     </div>
     <div class="reaction-buttons">
       <button class="btn-reaction" id="like-btn">👍 <span id="like-count">0</span></button>
@@ -559,9 +559,24 @@
 
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script>
-    // Уникальное имя проекта для счетчиков (измени, если захочешь полностью обнулить статистику)
-    const namespace = "reeggtag_bio_project_2026"; 
+    // Твоя персональная конфигурация базы данных Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtuR0bfOIeHscYawr_j7OQ7Yt2_A-LcVo",
+      authDomain: "reeggtag-bio.firebaseapp.com",
+      databaseURL: "https://reeggtag-bio-default-rtdb.firebaseio.com",
+      projectId: "reeggtag-bio",
+      storageBucket: "reeggtag-bio.firebasestorage.app",
+      messagingSenderId: "1018015580839",
+      appId: "1:1018015580839:web:4818ddd3faba2d39b99182"
+    };
+
+    // Инициализация базы данных
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     const viewsEl = document.getElementById('visitor-count');
     const likesEl = document.getElementById('like-count');
@@ -569,29 +584,34 @@
     const likeBtn = document.getElementById('like-btn');
     const dislikeBtn = document.getElementById('dislike-btn');
 
-    // Проверяем, голосовал ли этот пользователь ранее
-    const hasVoted = localStorage.getItem(`${namespace}_voted`);
+    const hasVoted = localStorage.getItem(`reeggtag_bio_voted`);
 
     function initStats() {
-      // 1. Накручиваем просмотр (+1) при загрузке страницы и выводим актуальное число
-      fetch(`https://api.moehtml.ir/hit/${namespace}/views`)
-        .then(res => res.json())
-        .then(data => { if(data.value) viewsEl.textContent = data.value; })
-        .catch(() => {});
+      const viewsRef = db.ref('stats/views');
+      const likesRef = db.ref('stats/likes');
+      const dislikesRef = db.ref('stats/dislikes');
 
-      // 2. Просто получаем текущие лайки без увеличения
-      fetch(`https://api.moehtml.ir/get/${namespace}/likes`)
-        .then(res => res.json())
-        .then(data => { if(data.value) likesEl.textContent = data.value; })
-        .catch(() => {});
+      // 1. Прибавляем просмотр при загрузке страницы
+      viewsRef.transaction((currentValue) => {
+        return (currentValue || 0) + 1;
+      });
 
-      // 3. Просто получаем текущие дизлайки без увеличения
-      fetch(`https://api.moehtml.ir/get/${namespace}/dislikes`)
-        .then(res => res.json())
-        .then(data => { if(data.value) dislikesEl.textContent = data.value; })
-        .catch(() => {});
+      // 2. Живое обновление просмотров (синхронно у всех онлайн!)
+      viewsRef.on('value', (snapshot) => {
+        viewsEl.textContent = snapshot.val() || 0;
+      });
 
-      // Визуально отключаем кнопки, если юзер уже оставил свой голос
+      // 3. Живое обновление лайков
+      likesRef.on('value', (snapshot) => {
+        likesEl.textContent = snapshot.val() || 0;
+      });
+
+      // 4. Живое обновление дизлайков
+      dislikesRef.on('value', (snapshot) => {
+        dislikesEl.textContent = snapshot.val() || 0;
+      });
+
+      // Защита: блокируем кнопки, если этот юзер уже ставил оценку
       if (hasVoted) {
         likeBtn.disabled = true;
         dislikeBtn.disabled = true;
@@ -601,33 +621,28 @@
     }
 
     function sendReaction(type) {
-      if (localStorage.getItem(`${namespace}_voted`)) return; // Стоп, если уже голосовал
+      if (localStorage.getItem(`reeggtag_bio_voted`)) return;
 
-      const element = type === 'like' ? likesEl : dislikesEl;
-      let currentVal = parseInt(element.textContent) || 0;
-      
-      // Сразу увеличиваем цифру на экране для плавности анимации
-      element.textContent = currentVal + 1;
-
-      // Локально блокируем кнопки
       likeBtn.disabled = true;
       dislikeBtn.disabled = true;
-      localStorage.setItem(`${namespace}_voted`, type);
+      localStorage.setItem(`reeggtag_bio_voted`, type);
 
-      // Отправляем +1 на сервер
-      fetch(`https://api.moehtml.ir/hit/${namespace}/${type}s`)
-        .then(res => res.json())
-        .then(data => { if(data.value) element.textContent = data.value; })
-        .catch(() => {});
+      // Безопасное атомарное добавление +1 в Firebase
+      const reactionRef = db.ref(`stats/${type}s`);
+      reactionRef.transaction((currentValue) => {
+        return (currentValue || 0) + 1;
+      });
     }
 
     likeBtn.addEventListener('click', () => sendReaction('like'));
     dislikeBtn.addEventListener('click', () => sendReaction('dislike'));
 
+    // Запуск статистики
     initStats();
   </script>
 
   <script>
+    // КОД ДЛЯ МУЗЫКАЛЬНОГО ПЛЕЕРА И КНОПКИ ДИСКОРДА
     const players = document.querySelectorAll('.tg-audio-player');
     const audios = document.querySelectorAll('.playlist-item audio');
     const volumeSlider = document.getElementById('volume-slider');
