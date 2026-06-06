@@ -563,7 +563,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script>
-    // Твоя персональная конфигурация базы данных Firebase
+    // ТВОЙ НАСТОЯЩИЙ FIREBASE КОНФИГ
     const firebaseConfig = {
       apiKey: "AIzaSyCtuR0bfOIeHscYawr_j7OQ7Yt2_A-LcVo",
       authDomain: "reeggtag-bio.firebaseapp.com",
@@ -574,7 +574,6 @@
       appId: "1:1018015580839:web:4818ddd3faba2d39b99182"
     };
 
-    // Инициализация базы данных
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -584,19 +583,20 @@
     const likeBtn = document.getElementById('like-btn');
     const dislikeBtn = document.getElementById('dislike-btn');
 
-    const hasVoted = localStorage.getItem(`reeggtag_bio_voted`);
+    // Хранилище голосов, уникальное именно под Firebase версию сайта
+    const hasVoted = localStorage.getItem('reeggtag_bio_voted_fb');
 
     function initStats() {
       const viewsRef = db.ref('stats/views');
       const likesRef = db.ref('stats/likes');
       const dislikesRef = db.ref('stats/dislikes');
 
-      // 1. Прибавляем просмотр при загрузке страницы
+      // 1. Атомарное прибавление просмотра (без сбросов)
       viewsRef.transaction((currentValue) => {
         return (currentValue || 0) + 1;
       });
 
-      // 2. Живое обновление просмотров (синхронно у всех онлайн!)
+      // 2. Живое обновление просмотров у ВСЕХ онлайн
       viewsRef.on('value', (snapshot) => {
         viewsEl.textContent = snapshot.val() || 0;
       });
@@ -611,7 +611,7 @@
         dislikesEl.textContent = snapshot.val() || 0;
       });
 
-      // Защита: блокируем кнопки, если этот юзер уже ставил оценку
+      // Если уже голосовал — блокируем кнопки сразу нормально
       if (hasVoted) {
         likeBtn.disabled = true;
         dislikeBtn.disabled = true;
@@ -621,13 +621,12 @@
     }
 
     function sendReaction(type) {
-      if (localStorage.getItem(`reeggtag_bio_voted`)) return;
+      if (localStorage.getItem('reeggtag_bio_voted_fb')) return;
 
       likeBtn.disabled = true;
       dislikeBtn.disabled = true;
-      localStorage.setItem(`reeggtag_bio_voted`, type);
+      localStorage.setItem('reeggtag_bio_voted_fb', type);
 
-      // Безопасное атомарное добавление +1 в Firebase
       const reactionRef = db.ref(`stats/${type}s`);
       reactionRef.transaction((currentValue) => {
         return (currentValue || 0) + 1;
@@ -637,12 +636,11 @@
     likeBtn.addEventListener('click', () => sendReaction('like'));
     dislikeBtn.addEventListener('click', () => sendReaction('dislike'));
 
-    // Запуск статистики
     initStats();
   </script>
 
   <script>
-    // КОД ДЛЯ МУЗЫКАЛЬНОГО ПЛЕЕРА И КНОПКИ ДИСКОРДА
+    // КОД ПЛЕЕРА И ДИСКОРДА
     const players = document.querySelectorAll('.tg-audio-player');
     const audios = document.querySelectorAll('.playlist-item audio');
     const volumeSlider = document.getElementById('volume-slider');
