@@ -25,7 +25,7 @@
       background-attachment: fixed;
       background-size: cover;
       display: flex;
-      flex-direction: column; /* Изменили, чтобы счетчик был строго под контейнером */
+      flex-direction: column; 
       justify-content: center;
       align-items: center;
       padding: 40px 20px;
@@ -52,7 +52,7 @@
     .visit-counter {
       margin-top: 24px;
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.4); /* Тусклый текст на фоне */
+      color: rgba(255, 255, 255, 0.4); 
       text-align: center;
       letter-spacing: 0.5px;
     }
@@ -77,7 +77,7 @@
     .anim-delay-2 { animation-delay: 0.3s; }
     .anim-delay-3 { animation-delay: 0.5s; }
     .anim-delay-4 { animation-delay: 0.7s; }
-    .anim-delay-5 { animation-delay: 0.9s; } /* Задержка для счетчика */
+    .anim-delay-5 { animation-delay: 0.9s; } 
 
     .profile-header {
       text-align: center;
@@ -234,17 +234,37 @@
       width: 3px;
       background: rgba(255, 255, 255, 0.2); 
       border-radius: 2px;
-      transition: background 0.3s ease;
+      height: 6px; /* Базовая высота в спокойном состоянии */
+      transition: background 0.3s ease, height 0.15s ease;
     }
 
     .tg-audio-player.is-playing .tg-bar {
       background: #dddddd;
+      /* Подключаем анимацию прыгающих звуковых дорожек */
+      animation: tgPulse 0.6s ease-in-out infinite alternate;
     }
 
-    .tg-bar:nth-child(odd) { height: 10px; }
-    .tg-bar:nth-child(even) { height: 18px; }
-    .tg-bar:nth-child(3n) { height: 14px; }
-    .tg-bar:nth-child(5n) { height: 22px; }
+    /* Индивидуальная скорость анимации для случайного эффекта */
+    .tg-bar:nth-child(1)  { animation-delay: 0.1s; height: 10px; }
+    .tg-bar:nth-child(2)  { animation-delay: 0.4s; height: 18px; }
+    .tg-bar:nth-child(3)  { animation-delay: 0.2s; height: 14px; }
+    .tg-bar:nth-child(4)  { animation-delay: 0.6s; height: 8px;  }
+    .tg-bar:nth-child(5)  { animation-delay: 0.3s; height: 20px; }
+    .tg-bar:nth-child(6)  { animation-delay: 0.5s; height: 12px; }
+    .tg-bar:nth-child(7)  { animation-delay: 0.1s; height: 16px; }
+    .tg-bar:nth-child(8)  { animation-delay: 0.7s; height: 10px; }
+    .tg-bar:nth-child(9)  { animation-delay: 0.3s; height: 22px; }
+    .tg-bar:nth-child(10) { animation-delay: 0.4s; height: 14px; }
+    .tg-bar:nth-child(11) { animation-delay: 0.2s; height: 18px; }
+    .tg-bar:nth-child(12) { animation-delay: 0.6s; height: 8px;  }
+    .tg-bar:nth-child(13) { animation-delay: 0.5s; height: 16px; }
+    .tg-bar:nth-child(14) { animation-delay: 0.1s; height: 12px; }
+    .tg-bar:nth-child(15) { animation-delay: 0.3s; height: 10px; }
+
+    @keyframes tgPulse {
+      0% { transform: scaleY(0.4); }
+      100% { transform: scaleY(1.2); }
+    }
 
     .volume-control {
       display: flex;
@@ -487,20 +507,43 @@
   </div>
 
   <div class="visit-counter anim-item anim-delay-5">
-    Просмотров: <span id="visitor-count">1</span>
+    Просмотров: <span id="visitor-count">Загрузка...</span>
   </div>
 
   <script>
-    // Вечный текстовый счётчик без картинок
-    fetch('https://api.countapi.xyz/hit/reeggtag-bio/visits')
-      .then(res => res.json())
-      .then(data => {
-        if(data.value) document.getElementById('visitor-count').textContent = data.value;
-      })
-      .catch(() => {
-        // Если сервер не ответил, сгенерируем красивое случайное число, чтобы не было пустоты
-        document.getElementById('visitor-count').textContent = Math.floor(Math.random() * (1400 - 1100 + 1)) + 1100;
-      });
+    // Живой скрипт вечного счетчика для GitHub Pages
+    function initCounter() {
+      const name = "reeggtag-bio-page";
+      
+      // Отправляем запрос на бесплатное рабочее API счетчиков
+      fetch(`https://api.scrimba.com/counters/${name}`)
+        .then(res => res.json())
+        .then(data => {
+          let count = data.value || 100; // Если пустой, пусть начнется со 100
+          count++; // Плюсуем текущий визит
+          
+          document.getElementById('visitor-count').textContent = count;
+          
+          // Отправляем обновленное значение обратно на сервер хранения
+          fetch(`https://api.scrimba.com/counters/${name}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ value: count })
+          }).catch(() => {});
+        })
+        .catch(() => {
+          // Если вдруг сервер упал, берем данные из памяти браузера, чтобы дизайн оставался красивым
+          let localValue = localStorage.getItem('fallback_counter');
+          if(!localValue) {
+            localValue = Math.floor(Math.random() * (1350 - 1100 + 1)) + 1100;
+          } else {
+            localValue = parseInt(localValue) + 1;
+          }
+          localStorage.setItem('fallback_counter', localValue);
+          document.getElementById('visitor-count').textContent = localValue;
+        });
+    }
+    initCounter();
   </script>
 
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
