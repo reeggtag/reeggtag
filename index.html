@@ -96,7 +96,7 @@
     }
 
     .btn-reaction:disabled {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
@@ -549,7 +549,7 @@
 
   <div class="bottom-feedback anim-item anim-delay-5">
     <div class="visit-counter">
-      Просмотров: <span id="visitor-count">Загрузка...</span>
+      Просмотров: <span id="visitor-count">0</span>
     </div>
     <div class="reaction-buttons">
       <button class="btn-reaction" id="like-btn">👍 <span id="like-count">0</span></button>
@@ -560,9 +560,8 @@
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
   <script>
-    // Уникальный ключ для твоих счетчиков
-    const baseKey = "reeggtag_bio_v2026_final"; 
-    const apiBase = "https://api.counterapi.dev/v1";
+    // Уникальное имя проекта для счетчиков (измени, если захочешь полностью обнулить статистику)
+    const namespace = "reeggtag_bio_project_2026"; 
 
     const viewsEl = document.getElementById('visitor-count');
     const likesEl = document.getElementById('like-count');
@@ -570,52 +569,55 @@
     const likeBtn = document.getElementById('like-btn');
     const dislikeBtn = document.getElementById('dislike-btn');
 
-    const hasVoted = localStorage.getItem(`${baseKey}_voted`);
+    // Проверяем, голосовал ли этот пользователь ранее
+    const hasVoted = localStorage.getItem(`${namespace}_voted`);
 
     function initStats() {
-      // 1. Просмотры: увеличиваем на сервере при входе
-      fetch(`${apiBase}/${baseKey}/views/up`)
+      // 1. Накручиваем просмотр (+1) при загрузке страницы и выводим актуальное число
+      fetch(`https://api.moehtml.ir/hit/${namespace}/views`)
         .then(res => res.json())
-        .then(data => { viewsEl.textContent = data.count || 1; })
-        .catch(() => { viewsEl.textContent = "1"; });
-
-      // 2. Достаем общее количество лайков
-      fetch(`${apiBase}/${baseKey}/likes`)
-        .then(res => res.json())
-        .then(data => { if(data.count) likesEl.textContent = data.count; })
+        .then(data => { if(data.value) viewsEl.textContent = data.value; })
         .catch(() => {});
 
-      // 3. Достаем общее количество дизлайков
-      fetch(`${apiBase}/${baseKey}/dislikes`)
+      // 2. Просто получаем текущие лайки без увеличения
+      fetch(`https://api.moehtml.ir/get/${namespace}/likes`)
         .then(res => res.json())
-        .then(data => { if(data.count) dislikesEl.textContent = data.count; })
+        .then(data => { if(data.value) likesEl.textContent = data.value; })
         .catch(() => {});
 
-      // Блокируем кнопки, если человек уже оставлял тут реакцию
+      // 3. Просто получаем текущие дизлайки без увеличения
+      fetch(`https://api.moehtml.ir/get/${namespace}/dislikes`)
+        .then(res => res.json())
+        .then(data => { if(data.value) dislikesEl.textContent = data.value; })
+        .catch(() => {});
+
+      // Визуально отключаем кнопки, если юзер уже оставил свой голос
       if (hasVoted) {
         likeBtn.disabled = true;
         dislikeBtn.disabled = true;
-        if (hasVoted === 'like') likeBtn.style.background = "rgba(255, 255, 255, 0.12)";
-        if (hasVoted === 'dislike') dislikeBtn.style.background = "rgba(255, 255, 255, 0.12)";
+        if (hasVoted === 'like') likeBtn.style.background = "rgba(255, 255, 255, 0.15)";
+        if (hasVoted === 'dislike') dislikeBtn.style.background = "rgba(255, 255, 255, 0.15)";
       }
     }
 
     function sendReaction(type) {
-      if (localStorage.getItem(`${baseKey}_voted`)) return;
+      if (localStorage.getItem(`${namespace}_voted`)) return; // Стоп, если уже голосовал
 
       const element = type === 'like' ? likesEl : dislikesEl;
       let currentVal = parseInt(element.textContent) || 0;
       
+      // Сразу увеличиваем цифру на экране для плавности анимации
       element.textContent = currentVal + 1;
 
+      // Локально блокируем кнопки
       likeBtn.disabled = true;
       dislikeBtn.disabled = true;
-      localStorage.setItem(`${baseKey}_voted`, type);
+      localStorage.setItem(`${namespace}_voted`, type);
 
       // Отправляем +1 на сервер
-      fetch(`${apiBase}/${baseKey}/${type}s/up`)
+      fetch(`https://api.moehtml.ir/hit/${namespace}/${type}s`)
         .then(res => res.json())
-        .then(data => { if(data.count) element.textContent = data.count; })
+        .then(data => { if(data.value) element.textContent = data.value; })
         .catch(() => {});
     }
 
