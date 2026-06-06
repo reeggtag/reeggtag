@@ -48,13 +48,56 @@
       gap: 24px;
     }
 
-    /* Стили для счетчика в самом низу */
-    .visit-counter {
+    /* Нижний блок для статистики и реакций */
+    .bottom-feedback {
       margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .visit-counter {
       font-size: 13px;
       color: rgba(255, 255, 255, 0.4); 
       text-align: center;
       letter-spacing: 0.5px;
+    }
+
+    /* Блок кнопок лайков/дизлайков */
+    .reaction-buttons {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn-reaction {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reaction:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-reaction:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .btn-reaction:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     @keyframes fadeInUp {
@@ -234,17 +277,15 @@
       width: 3px;
       background: rgba(255, 255, 255, 0.2); 
       border-radius: 2px;
-      height: 6px; /* Базовая высота в спокойном состоянии */
+      height: 6px; 
       transition: background 0.3s ease, height 0.15s ease;
     }
 
     .tg-audio-player.is-playing .tg-bar {
       background: #dddddd;
-      /* Подключаем анимацию прыгающих звуковых дорожек */
       animation: tgPulse 0.6s ease-in-out infinite alternate;
     }
 
-    /* Индивидуальная скорость анимации для случайного эффекта */
     .tg-bar:nth-child(1)  { animation-delay: 0.1s; height: 10px; }
     .tg-bar:nth-child(2)  { animation-delay: 0.4s; height: 18px; }
     .tg-bar:nth-child(3)  { animation-delay: 0.2s; height: 14px; }
@@ -506,50 +547,72 @@
 
   </div>
 
-  <div class="visit-counter anim-item anim-delay-5">
-    Просмотров: <span id="visitor-count">Загрузка...</span>
+  <div class="bottom-feedback anim-item anim-delay-5">
+    <div class="visit-counter">
+      Просмотров: <span id="visitor-count">Загрузка...</span>
+    </div>
+    <div class="reaction-buttons">
+      <button class="btn-reaction" id="like-btn">👍 <span id="like-count">0</span></button>
+      <button class="btn-reaction" id="dislike-btn">👎 <span id="dislike-count">0</span></button>
+    </div>
   </div>
-
-  <script>
-    // Живой скрипт вечного счетчика для GitHub Pages
-    function initCounter() {
-      const name = "reeggtag-bio-page-v2";
-      
-      // Отправляем запрос на бесплатное рабочее API счетчиков
-      fetch(`https://api.scrimba.com/counters/${name}`)
-        .then(res => res.json())
-        .then(data => {
-          let count = data.value || 100; // Если пустой, пусть начнется со 100
-          count++; // Плюсуем текущий визит
-          
-          document.getElementById('visitor-count').textContent = count;
-          
-          // Отправляем обновленное значение обратно на сервер хранения
-          fetch(`https://api.scrimba.com/counters/${name}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ value: count })
-          }).catch(() => {});
-        })
-        .catch(() => {
-          // Если вдруг сервер упал, берем данные из памяти браузера, чтобы дизайн оставался красивым
-          let localValue = localStorage.getItem('fallback_counter');
-          if(!localValue) {
-            localValue = Math.floor(Math.random() * (1350 - 1100 + 1)) + 1100;
-          } else {
-            localValue = parseInt(localValue) + 1;
-          }
-          localStorage.setItem('fallback_counter', localValue);
-          document.getElementById('visitor-count').textContent = localValue;
-        });
-    }
-    initCounter();
-  </script>
 
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
   <script>
-    // Музыкальный плеер
+    const baseName = "reeggtag-bio-fresh-v4"; // Ключ v4 гарантирует полный сброс
+
+    function initStats() {
+      // 1. Счётчик просмотров (базовое значение теперь 0)
+      fetch(`https://api.scrimba.com/counters/${baseName}-views`)
+        .then(res => res.json())
+        .then(data => {
+          let count = data.value || 0; 
+          count++; 
+          document.getElementById('visitor-count').textContent = count;
+          fetch(`https://api.scrimba.com/counters/${baseName}-views`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ value: count })
+          }).catch(() => {});
+        }).catch(() => { document.getElementById('visitor-count').textContent = "1"; });
+
+      // 2. Загрузка общего количества Лайков
+      fetch(`https://api.scrimba.com/counters/${baseName}-likes`)
+        .then(res => res.json())
+        .then(data => { if(data.value) document.getElementById('like-count').textContent = data.value; })
+        .catch(() => {});
+
+      // 3. Загрузка общего количества Дизлайков
+      fetch(`https://api.scrimba.com/counters/${baseName}-dislikes`)
+        .then(res => res.json())
+        .then(data => { if(data.value) document.getElementById('dislike-count').textContent = data.value; })
+        .catch(() => {});
+    }
+
+    function sendReaction(type) {
+      const elementId = `${type}-count`;
+      let currentVal = parseInt(document.getElementById(elementId).textContent) || 0;
+      currentVal++;
+      document.getElementById(elementId).textContent = currentVal;
+
+      document.getElementById('like-btn').disabled = true;
+      document.getElementById('dislike-btn').disabled = true;
+
+      fetch(`https://api.scrimba.com/counters/${baseName}-${type}s`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: currentVal })
+      }).catch(() => {});
+    }
+
+    document.getElementById('like-btn').addEventListener('click', () => sendReaction('like'));
+    document.getElementById('dislike-btn').addEventListener('click', () => sendReaction('dislike'));
+
+    initStats();
+  </script>
+
+  <script>
     const players = document.querySelectorAll('.tg-audio-player');
     const audios = document.querySelectorAll('.playlist-item audio');
     const volumeSlider = document.getElementById('volume-slider');
