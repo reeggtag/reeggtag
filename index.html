@@ -25,6 +25,7 @@
       background-attachment: fixed;
       background-size: cover;
       display: flex;
+      flex-direction: column; /* Изменили, чтобы счетчик был строго под контейнером */
       justify-content: center;
       align-items: center;
       padding: 40px 20px;
@@ -39,13 +40,44 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 28px;
       width: 100%;
-      max-width: 540px;
+      max-width: 540px; 
       padding: 35px 30px;
       box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
       display: flex;
       flex-direction: column;
       gap: 24px;
     }
+
+    /* Стили для счетчика в самом низу */
+    .visit-counter {
+      margin-top: 24px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4); /* Тусклый текст на фоне */
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .anim-item {
+      opacity: 0;
+      animation: fadeInUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    .anim-delay-1 { animation-delay: 0.1s; }
+    .anim-delay-2 { animation-delay: 0.3s; }
+    .anim-delay-3 { animation-delay: 0.5s; }
+    .anim-delay-4 { animation-delay: 0.7s; }
+    .anim-delay-5 { animation-delay: 0.9s; } /* Задержка для счетчика */
 
     .profile-header {
       text-align: center;
@@ -84,6 +116,20 @@
       width: 100%;
     }
 
+    .links-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .links-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      padding-left: 4px;
+      margin-bottom: 4px;
+    }
+
     .links-grid {
       display: flex;
       flex-direction: column;
@@ -104,7 +150,7 @@
       font-size: 15px;
       font-weight: 500;
       cursor: pointer; 
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
     }
 
     .link-item:hover {
@@ -126,7 +172,6 @@
       color: #dddddd;
     }
 
-    /* Стили для ТГ-плееров */
     .playlist-item {
       display: flex;
       flex-direction: column;
@@ -201,7 +246,6 @@
     .tg-bar:nth-child(3n) { height: 14px; }
     .tg-bar:nth-child(5n) { height: 22px; }
 
-    /* Стили для ползунка громкости */
     .volume-control {
       display: flex;
       align-items: center;
@@ -313,7 +357,7 @@
 
   <div class="main-container">
     
-    <div class="profile-header">
+    <div class="profile-header anim-item anim-delay-1">
       <img class="avatar" src="avatar.jpg" alt="reeggtag Avatar">
       <div class="nickname">reeggtag</div>
       <div class="description">
@@ -321,45 +365,48 @@
       </div>
     </div>
 
-    <div class="divider"></div>
+    <div class="divider anim-item anim-delay-1"></div>
 
-    <div class="links-grid">
-      <a href="https://t.me/reeggtag15" target="_blank" rel="noopener noreferrer" class="link-item">
-        <span class="icon-tag">TG</span>
-        <span class="link-value">@reeggtag15</span>
-      </a>
+    <div class="links-section anim-item anim-delay-2">
+      <div class="links-title">соц-сети:</div>
+      <div class="links-grid">
+        <a href="https://t.me/reeggtag15" target="_blank" rel="noopener noreferrer" class="link-item">
+          <span class="icon-tag">TG</span>
+          <span class="link-value">@reeggtag15</span>
+        </a>
 
-      <a href="https://t.me/reeggtag" target="_blank" rel="noopener noreferrer" class="link-item">
-        <span class="icon-tag">TGK</span>
-        <span class="link-value">@reeggtag</span>
-      </a>
-      
-      <div class="link-item" id="discord-btn">
-        <span class="icon-tag">DS</span>
-        <span class="link-value" id="discord-nick">reeggtag</span>
+        <a href="https://t.me/reeggtag" target="_blank" rel="noopener noreferrer" class="link-item">
+          <span class="icon-tag">TGK</span>
+          <span class="link-value">@reeggtag</span>
+        </a>
+        
+        <div class="link-item" id="discord-btn">
+          <span class="icon-tag">DS</span>
+          <span class="link-value" id="discord-nick">reeggtag</span>
+        </div>
+        
+        <a href="https://www.tiktok.com/@reeggtag" target="_blank" rel="noopener noreferrer" class="link-item">
+          <span class="icon-tag">TT</span>
+          <span class="link-value">@reeggtag</span>
+        </a>
+
+        <a href="https://steamcommunity.com/id/reeggtag/" target="_blank" rel="noopener noreferrer" class="link-item">
+          <span class="icon-tag">ST</span>
+          <span class="link-value">reeggtag</span>
+        </a>
       </div>
-      
-      <a href="https://www.tiktok.com/@reeggtag" target="_blank" rel="noopener noreferrer" class="link-item">
-        <span class="icon-tag">TT</span>
-        <span class="link-value">@reeggtag</span>
-      </a>
-
-      <a href="https://steamcommunity.com/id/reeggtag/" target="_blank" rel="noopener noreferrer" class="link-item">
-        <span class="icon-tag">ST</span>
-        <span class="link-value">reeggtag</span>
-      </a>
     </div>
 
-    <div class="divider"></div>
+    <div class="divider anim-item anim-delay-2"></div>
 
-    <div class="games-section">
+    <div class="games-section anim-item anim-delay-3">
       <div class="games-title">Любимые игры:</div>
       <img class="games-image" src="games.jpg" alt="Любимые игры">
     </div>
 
-    <div class="divider"></div>
+    <div class="divider anim-item anim-delay-3"></div>
 
-    <div class="playlist-section">
+    <div class="playlist-section anim-item anim-delay-4">
       <div class="playlist-title">Мой плейлист:</div>
       
       <div class="volume-control">
@@ -422,7 +469,7 @@
         </div>
 
         <div class="playlist-item">
-          <div class="track-title">обрыган - ???</div>
+          <div class="track-title">Твой трек 5 - Название</div>
           <div class="tg-audio-player" data-audio-id="audio5">
             <button class="tg-play-btn" aria-label="Воспроизведение"><span>▶</span></button>
             <div class="tg-wave">
@@ -439,9 +486,14 @@
 
   </div>
 
+  <div class="visit-counter anim-item anim-delay-5">
+  Просмотров: <img src="https://hit.yhype.me/github/profile/reeggtag-bio" alt="Hits" style="vertical-align: middle; height: 14px; filter: invert(1) opacity(0.4);">
+  </div>
+
   <div id="toast" class="toast-notification">Никнейм скопирован в буфер обмена!</div>
 
   <script>
+    // Музыкальный плеер
     const players = document.querySelectorAll('.tg-audio-player');
     const audios = document.querySelectorAll('.playlist-item audio');
     const volumeSlider = document.getElementById('volume-slider');
@@ -450,7 +502,6 @@
     let currentButtonIcon = null;
     let currentPlayerBlock = null;
 
-    // Установка громкости для всех аудио
     function syncVolume() {
       audios.forEach(audio => {
         audio.volume = volumeSlider.value;
@@ -465,7 +516,6 @@
       const audio = document.getElementById(audioId);
       const btnIcon = player.querySelector('.tg-play-btn span');
 
-      // Если кликнули на тот же трек, который уже выбран
       if (currentAudio === audio) {
         if (!audio.paused) {
           audio.pause();
@@ -480,27 +530,24 @@
         return;
       }
 
-      // Если играет другой трек — останавливаем его начисто
       if (currentAudio) {
         currentAudio.pause();
-        currentAudio.currentTime = 0; // Сброс в начало
+        currentAudio.currentTime = 0;
         currentButtonIcon.textContent = '▶';
         currentPlayerBlock.classList.remove('is-playing');
       }
 
-      // Запуск нового трека
       audio.play().then(() => {
         btnIcon.textContent = '⏸';
         player.classList.add('is-playing');
         currentAudio = audio;
         currentButtonIcon = btnIcon;
         currentPlayerBlock = player;
-      }).catch(err => console.log("Мобильный браузер заблокировал старт:", err));
+      }).catch(err => console.log(err));
     }
 
     players.forEach(player => {
       const btn = player.querySelector('.tg-play-btn');
-      // Используем touchstart + click для мгновенного отклика на мобильных
       const startPlay = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -510,7 +557,6 @@
       btn.addEventListener('touchstart', startPlay, { passive: false });
     });
 
-    // Безопасный автоплей для мобилок через любое первое касание экрана
     function autoPlayFirstTrack() {
       if (!currentAudio) {
         const firstPlayer = players[0];
@@ -540,7 +586,6 @@
 
     addAutoPlayListeners();
 
-    // Копирование Дискорда
     const discordBtn = document.getElementById('discord-btn');
     const toast = document.getElementById('toast');
     let toastTimeout;
